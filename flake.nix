@@ -5,7 +5,7 @@
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-21.11";
     NUR.url = "github:nix-community/NUR";
     nxc.url = "git+https://gitlab.inria.fr/nixos-compose/nixos-compose.git";
-    kapack.url = "/home/imeignanmasson/nur-kapack";
+    kapack.url = "/home/meandres/Work/stage_M1/nur-kapack";
   };
 
   outputs = { self, nixpkgs, NUR, nxc, kapack }:
@@ -36,6 +36,6 @@
       defaultPackage.${system} =
         self.packages.${system}."composition::bench_colmet";
 
-      devShell.${system} = nxc.devShells.${system}.nxcShell;
+      devShell.${system} = nxc.devShells.${system}.nxcShellFull;
     };
 }

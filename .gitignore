@@ -1,4 +1,5 @@
 artifact
+build
 deploy/
 nodefile
 sweeps

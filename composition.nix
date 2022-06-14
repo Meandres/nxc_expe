@@ -1,6 +1,6 @@
-{ pkgs, nur, ... }: {
+{ pkgs, ... }: {
   nodes = {
-    collector = { pkgs, nur, ... }:
+    collector = { pkgs, ... }:
       {
         environment.systemPackages = [ pkgs.nur.repos.kapack.colmet-collector ];
       };
