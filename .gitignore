@@ -1,0 +1,5 @@
+artifact
+deploy/
+nodefile
+sweeps
+__pycache__
