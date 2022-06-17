@@ -5,7 +5,7 @@
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-21.11";
     NUR.url = "github:nix-community/NUR";
     nxc.url = "git+https://gitlab.inria.fr/nixos-compose/nixos-compose.git";
-    kapack.url = "/home/meandres/Work/stage_M1/nur-kapack";
+    kapack.url = "/home/imeignanmasson/nur-kapack";
   };
 
   outputs = { self, nixpkgs, NUR, nxc, kapack }:

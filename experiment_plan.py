@@ -28,6 +28,9 @@ class experiment_plan_generator():
     def get_nb_remaining(self):
         return len(self.sweeper.get_remaining())
 
+    def get_nb_total(self):
+        return len(self.sweeper.get_sweeps())
+
 if __name__ == "__main__":
     logger.setLevel(0)
     plan=experiment_plan_generator("expe_5.yml")

@@ -52,13 +52,13 @@
       },
       "locked": {
         "lastModified": 1655210467,
-        "narHash": "sha256-PSq/aj5PDeDJtXE+N7hzF5M2QJMMpZfERnn0nNZLRzg=",
+        "narHash": "sha256-Ez6emxN3/dhdzct2KlthLuc/+mmYEh8wMf2SaCl21Wk=",
         "type": "git",
-        "url": "file:///home/meandres/Work/stage_M1/nur-kapack"
+        "url": "file:///home/imeignanmasson/nur-kapack"
       },
       "original": {
         "type": "git",
-        "url": "file:///home/meandres/Work/stage_M1/nur-kapack"
+        "url": "file:///home/imeignanmasson/nur-kapack"
       }
     },
     "nixpkgs": {
