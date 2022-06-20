@@ -33,6 +33,6 @@ class experiment_plan_generator():
 
 if __name__ == "__main__":
     logger.setLevel(0)
-    plan=experiment_plan_generator("expe_5.yml")
+    plan=experiment_plan_generator("expe.yml")
     print(plan.get_nb_remaining())
     print(plan.get_next_config())
