@@ -2,11 +2,11 @@
   nodes = {
     collector = { pkgs, ... }:
       {
-        environment.systemPackages = [ pkgs.nur.repos.kapack.colmet-collector ];
+        environment.systemPackages = [ pkgs.nur.repos.kapack.colmet ];
       };
     compute = { pkgs, ... }:
       { #We need the collector to have colmet-config-node
-        environment.systemPackages = with pkgs; [ openmpi nur.repos.kapack.npb nur.repos.kapack.colmet-rs nur.repos.kapack.colmet-collector ];
+        environment.systemPackages = with pkgs; [ openmpi nur.repos.kapack.npb nur.repos.kapack.colmet killall ]; #nur.repos.kapack.colmet-collector ];
         security.pam.loginLimits = [
             { domain = "*"; item = "memlock"; type = "-"; value = "unlimited"; }
             { domain = "*"; item = "stack"; type = "-"; value = "unlimited"; }
