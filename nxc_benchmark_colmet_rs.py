@@ -82,20 +82,20 @@ class Colmet_bench(Engine):
     def start_colmet(self, collector_parameters, parameters):
         """Starts colmet node agent on all the compute nodes with the specified parameters and the collector on the corresponding host"""
         command_node = "colmet-node --zeromq-uri tcp://{}:5556 {}".format(self.nodes["collector"][0].address, parameters)
-        command_collector = "colmet-collector --sample-period {}".format(collector_parameters)
+        #command_collector = "colmet-collector --sample-period {}".format(collector_parameters)
         #command_node = "waiting_dummy {}".format(parameters)
         self.colmet_nodes = Remote(command_node, self.nodes["compute"], connection_params={"user" : "root"}).start()
-        self.collector = SshProcess(command_collector, self.nodes["collector"][0], connection_params={'user' : 'root'}).start()
+        #self.collector = SshProcess(command_collector, self.nodes["collector"][0], connection_params={'user' : 'root'}).start()
         self.colmet_launched=True
 
     def kill_colmet(self):
         """Killing colmet node agent on all the compute nodes"""
          # We assign to nothing to suppress outputs
         _ = self.colmet_nodes.kill()
-        _ = self.collector.kill()
-        _ = SshProcess("killall .colmet-collect", self.nodes["collector"][0], connection_params={'user':'root'}).run()
+        #_ = self.collector.kill()
+        #_ = SshProcess("killall .colmet-collect", self.nodes["collector"][0], connection_params={'user':'root'}).run()
         _ = self.colmet_nodes.wait()
-        _ = self.collector.wait()
+        #_ = self.collector.wait()
         self.colmet_launched = False
 
     def update_colmet(self, new_sampling_period, new_metrics):
