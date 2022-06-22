@@ -46,7 +46,7 @@ class Colmet_bench(Engine):
         parser.add_argument('--nxc_build_file', help='Path to the NXC deploy file')
         parser.add_argument('--build', action='store_true', help='Build the composition')
         parser.add_argument('--nxc_folder', default="~/nixProjects/nixos-compose", help="Path to the NXC folder")
-        parser.add_argument('--experiment_file', help="File describing the experiment to perform", default="expe_python.yml")
+        parser.add_argument('--experiment_file', help="File describing the experiment to perform", default="expe.yml")
         parser.add_argument('--result_file', help="Output file", default="result_python")
         parser.add_argument('--time_experiment', default=300, help="Time needed to perform one repetition (in sec)")
         parser.add_argument('--site', default="grenoble", help="G5K site where the submission will be issued")
@@ -82,42 +82,39 @@ class Colmet_bench(Engine):
     def start_colmet(self, collector_parameters, parameters):
         """Starts colmet node agent on all the compute nodes with the specified parameters and the collector on the corresponding host"""
         command_node = "colmet-node --zeromq-uri tcp://{}:5556 {}".format(self.nodes["collector"][0].address, parameters)
-        #command_collector = "colmet-collector --sample-period {}".format(collector_parameters)
+        command_collector = "colmet-collector"
         #command_node = "waiting_dummy {}".format(parameters)
         self.colmet_nodes = Remote(command_node, self.nodes["compute"], connection_params={"user" : "root"}).start()
-        #self.collector = SshProcess(command_collector, self.nodes["collector"][0], connection_params={'user' : 'root'}).start()
+        self.collector = SshProcess(command_collector, self.nodes["collector"][0], connection_params={'user' : 'root'}).start()
         self.colmet_launched=True
 
     def kill_colmet(self):
         """Killing colmet node agent on all the compute nodes"""
          # We assign to nothing to suppress outputs
         _ = self.colmet_nodes.kill()
-        #_ = self.collector.kill()
-        #_ = SshProcess("killall .colmet-collect", self.nodes["collector"][0], connection_params={'user':'root'}).run()
+        _ = self.collector.kill()
         _ = self.colmet_nodes.wait()
-        #_ = self.collector.wait()
+        _ = self.collector.wait()
         self.colmet_launched = False
 
     def update_colmet(self, new_sampling_period, new_metrics):
         """self.kill_colmet()
         colmet_args=" --enable-perfhw -s {} -m {}".format(new_sampling_period, new_metrics)
         collector_args=""
-        self.start_colmet(collector_args, colmet_args)
+        self.start_colmet(collector_args, colmet_args)"""
         command_update = "colmet-node-config {} {}".format(new_sampling_period, new_metrics)
-        u = Remote(command_update, self.nodes["compute"], connection_params={"user" : "root"}).run()"""
-        self.kill_colmet()
-        self.start_colmet(str(new_sampling_period), str(new_sampling_period))
+        u = Remote(command_update, self.nodes["compute"], connection_params={"user" : "root"}).run()
+        """self.kill_colmet()
+        self.start_colmet(str(new_sampling_period), str(new_sampling_period))"""
 
     def parse_params(self, parameters):
         p=parameters.split(";")
         self.params={}
-        #self.params['metrics']=p[1]
-        #self.params['sampling_period']=p[2]
+        self.params['metrics']=p[2]
         self.params['sampling_period']=p[1]
 
     def run(self):
-        #colmet_args=" --enable-perfhw"
-        colmet_args=""
+        colmet_args=" --enable-perfhw"
         collector_args=""
         self.start_colmet(collector_args, colmet_args)
         self.uniform_parameters = {
@@ -142,8 +139,7 @@ class Colmet_bench(Engine):
         self.parse_params(parameters)
         mpi_executable_name = self.uniform_parameters['bench_name'] + "." + self.uniform_parameters['bench_class'] + "." + self.uniform_parameters['bench_type']
 
-        #self.update_colmet(self.params['sampling_period'], self.params['metrics'])
-        self.update_colmet(self.params['sampling_period'], "")
+        self.update_colmet(self.params['sampling_period'], self.params['metrics'])
         
         bench_command = "mpirun --mca pml ^ucx --mca mtl ^psm2,ofi --mca btl ^ofi,openib -machinefile {}/nodefile ".format(os.getcwd()) + mpi_executable_name
     
