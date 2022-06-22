@@ -47,7 +47,7 @@ class Colmet_bench(Engine):
         parser.add_argument('--build', action='store_true', help='Build the composition')
         parser.add_argument('--nxc_folder', default="~/nixProjects/nixos-compose", help="Path to the NXC folder")
         parser.add_argument('--experiment_file', help="File describing the experiment to perform", default="expe.yml")
-        parser.add_argument('--result_file', help="Output file", default="result_python")
+        parser.add_argument('--result_file', help="Output file", default="expe_results")
         parser.add_argument('--time_experiment', default=300, help="Time needed to perform one repetition (in sec)")
         parser.add_argument('--site', default="grenoble", help="G5K site where the submission will be issued")
         parser.add_argument('--cluster', default="dahu", help="G5K cluster from where nodes should be requested")
