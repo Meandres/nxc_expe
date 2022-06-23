@@ -34,7 +34,7 @@
       };
 
       defaultPackage.${system} =
-        self.packages.${system}."composition::bench_colmet";
+        self.packages.${system}."composition::g5k-ramdisk";
 
       devShell.${system} = nxc.devShells.${system}.nxcShellFull;
     };

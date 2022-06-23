@@ -2,7 +2,7 @@
   nodes = {
     collector = { pkgs, ... }:
       {
-        environment.systemPackages = [ pkgs.nur.repos.kapack.colmet-collector pkgs.nur.repos.kapack.colmet ];
+        environment.systemPackages = [ pkgs.nur.repos.kapack.colmet-collector pkgs.nur.repos.kapack.colmet pkgs.killall ];
       };
     compute = { pkgs, ... }:
       { #We need the collector to have colmet-config-node
