@@ -23,7 +23,7 @@ def parse_output(s):
             sp=l.split(" ")
             out+=";"+sp[-1]
     return out
-
+    
 def reserve_nodes(nb_nodes, site, cluster, walltime=3600):
     jobs=oarsub([(OarSubmission(resources="cluster=1/nodes={}".format(nb_nodes), walltime=walltime, additional_options="-O /dev/null -E /dev/null"), site)])
     return jobs
@@ -35,6 +35,8 @@ def write_nodefile(nodes):
         for _ in range(0, int(get_host_attributes(n)['architecture']['nb_cores'])):
             hf.write(n+"\n")
     hf.close()
+    for n in nodes:
+        _ = Process("scp {}/nodefile root@{}:/root".format(os.getcwd(), n)).run()
 
 class Colmet_bench(Engine):
     """
@@ -95,13 +97,13 @@ class Colmet_bench(Engine):
             self.kill_colmet(parameters['type_colmet'])
         if (parameters['type_colmet']=="Rust" or parameters['type_colmet']=="Python"):
             if (parameters['type_colmet']=="Rust"):
-                node_command = "colmet-node --enable-perfhw -s {} -m {} --zeromq-uri {}".format(parameters["sampling_period"], parameters["metrics"], self.nodes["collector"][0].address)
+                node_command = "colmet-node --enable-perfhw -s {} -m {} --zeromq-uri tcp://{}:5556".format(parameters["sampling_period"], parameters["metrics"], self.nodes["collector"][0].address)
                 collector_command = "colmet-collector"
             else:
-                node_command = "python-node -s {} --zeromq-uri {}".format(parameters["sampling_period"], self.nodes["collector"][0].address)
+                node_command = "python-node -s {} --zeromq-uri tcp://{}:5556".format(parameters["sampling_period"], self.nodes["collector"][0].address)
                 collector_command = "python-collector -s {} --enable-stdout-backend".format(parameters["sampling_period"])
-            self.colmet_nodes = Remote(command_node, self.nodes["compute"], connection_params={"user" : "root"}).start()
-            self.collector = SshProcess(command_collector, self.nodes["collector"][0], connection_params={'user' : 'root'}).start()
+            self.colmet_nodes = Remote(node_command, self.nodes["compute"], connection_params={"user" : "root"}).start()
+            self.collector = SshProcess(collector_command, self.nodes["collector"][0], connection_params={'user' : 'root'}).start()
             self.colmet_launched = True
 
     def run(self):
@@ -111,7 +113,7 @@ class Colmet_bench(Engine):
                 'bench_type':self.args.type_bench,
                 'nb_nodes':self.args.number_compute_nodes
                 }
-        #a = input("Stop")
+        a = input("Stop")
         f = open(self.args.result_file + "_" + self.uniform_parameters['bench_name'] + "_" + self.uniform_parameters['bench_class'] + "_" + self.uniform_parameters['bench_type']+".csv", "w")
         f.write(str(self.uniform_parameters))
         f.write("repetition,sampling,metrics,time,Mops\n")
@@ -132,7 +134,7 @@ class Colmet_bench(Engine):
     
         p = SshProcess(bench_command, self.nodes['compute'][0], connection_params={"user":"root"}).run(timeout=self.args.time_experiment)
         p.wait()
-        return parameters+","+parse_output(p.stdout)+"\n"
+        return "{repetition},{type_colmet},{sampling_period},{metrics}".format(**parameters)+parse_output(p.stdout)+"\n"
 
 if __name__ == "__main__":
     bench = Colmet_bench()
