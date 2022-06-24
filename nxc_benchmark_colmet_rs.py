@@ -9,6 +9,7 @@ import time
 import os
 import sys
 import threading
+from signal import SIGKILL, SIGTERM
 username=""
 starttime=0
 
@@ -21,7 +22,7 @@ def parse_output(s):
             out+=sp[-1]
         elif l.startswith(" Mop/s total"):
             sp=l.split(" ")
-            out+=";"+sp[-1]
+            out+=","+sp[-1]
     return out
     
 def reserve_nodes(nb_nodes, site, cluster, walltime=3600):
@@ -85,11 +86,11 @@ class Colmet_bench(Engine):
         """Killing colmet node agent on all the compute nodes"""
          # We assign to nothing to suppress outputs
         _ = self.colmet_nodes.kill()
-        _ = self.collector.kill()
-        if (type_colmet == "Python"):
-            _ = SshProcess("killall .python-collect", self.nodes["collector"][0], connection_params={'user':'root'}).run()
+        #_ = self.collector.kill()
+        #if (type_colmet == "Python"):
+        #    _ = SshProcess("killall .python-collect", self.nodes["collector"][0], connection_params={'user':'root'}).run()
         _ = self.colmet_nodes.wait()
-        _ = self.collector.wait()
+        #_ = self.collector.wait()
         self.colmet_launched = False
 
     def update_colmet(self, parameters):
@@ -103,7 +104,7 @@ class Colmet_bench(Engine):
                 node_command = "python-node -s {} --zeromq-uri tcp://{}:5556".format(parameters["sampling_period"], self.nodes["collector"][0].address)
                 collector_command = "python-collector -s {} --enable-stdout-backend".format(parameters["sampling_period"])
             self.colmet_nodes = Remote(node_command, self.nodes["compute"], connection_params={"user" : "root"}).start()
-            self.collector = SshProcess(collector_command, self.nodes["collector"][0], connection_params={'user' : 'root'}).start()
+            #self.collector = SshProcess(collector_command, self.nodes["collector"][0], connection_params={'user' : 'root'}).start()
             self.colmet_launched = True
 
     def run(self):
@@ -134,7 +135,7 @@ class Colmet_bench(Engine):
     
         p = SshProcess(bench_command, self.nodes['compute'][0], connection_params={"user":"root"}).run(timeout=self.args.time_experiment)
         p.wait()
-        return "{repetition},{type_colmet},{sampling_period},{metrics}".format(**parameters)+parse_output(p.stdout)+"\n"
+        return "{repetitions},{type_colmet},{sampling_period},\"{metrics}\"".format(**parameters)+","+parse_output(p.stdout)+"\n"
 
 if __name__ == "__main__":
     bench = Colmet_bench()
